@@ -1,0 +1,16 @@
+gi#IntelliJ
+.idea/
+history
+out
+*.iml
+*.iws
+
+#Gradle
+.gradle
+build
+
+#Mac
+.DS_Store
+
+#Serenity
+target

@@ -1,0 +1,158 @@
+group 'com.vertafore'
+version '1.0.0'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:1.9.19")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'net.serenity-bdd.aggregator'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile "junit:junit:4.12"
+    testCompile "net.serenity-bdd:serenity-core:1.9.19"
+    testCompile "net.serenity-bdd:serenity-cucumber:1.9.7"
+    testCompile "net.serenity-bdd:serenity-rest-assured:1.9.17"
+    testCompile "org.seleniumhq.selenium:selenium-ie-driver:3.11.0"
+    testCompile "org.seleniumhq.selenium:selenium-chrome-driver:3.11.0"
+    testCompile "org.seleniumhq.selenium:selenium-firefox-driver:3.11.0"
+}
+
+tasks.withType(Test) {
+
+    testLogging {
+        outputs.upToDateWhen {false}
+        showStandardStreams = true
+    }
+    /*
+     * This will set the driver and binary location given the driver of choice is passed in at the command line via
+     * -PselectedDriver=<chrome/iexplorer/firefox>.
+     */
+    String recordedOs, testOs
+    recordedOs = System.properties['os.name']
+    if(recordedOs.toLowerCase().contains("windows")) {
+        testOs = 'windows'
+    } else if(recordedOs.toLowerCase().contains("mac")) {
+        testOs = 'mac'
+    } else {
+        testOs = 'linux'
+    }
+    String resourcesLoc = "./lib/drivers/"
+    String driver = findProperty('selectedDriver')
+    systemProperty 'webdriver.driver', System.getProperty('webdriver.driver', driver)
+    switch(driver) {
+        case 'chrome':
+            switch(testOs) {
+                case 'windows':
+                    project.logger.lifecycle("Chrome driver selected on Windows.")
+                    systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver',
+                            "${resourcesLoc}chromedriver.exe")
+                    break
+                case 'mac':
+                    project.logger.lifecycle("Chrome driver selected on Mac.")
+                    systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver',
+                            "${resourcesLoc}chromedriver")
+                    break
+                case 'linux':
+                    project.logger.lifecycle("Chrome driver selected on Linux.")
+                    systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver',
+                            "${resourcesLoc}linux/chromedriver_linux")
+                    break
+                default:
+                    project.logger.lifecycle("OS value not found.  Selecting Chrome driver on Windows.")
+                    systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver',
+                            "${resourcesLoc}chromedriver.exe")
+            }
+            break
+        case 'firefox':
+            switch(testOs) {
+                case 'windows':
+                    project.logger.lifecycle("Firefox driver selected on Windows.")
+                    systemProperty 'webdriver.firefox.bin', System.getProperty('webdriver.firefox.bin',
+                            "${resourcesLoc}geckodriver.exe")
+                    break
+                case 'mac':
+                    project.logger.lifecycle("Firefox driver selected on Mac.")
+                    systemProperty 'webdriver.firefox.bin', System.getProperty('webdriver.firefox.bin',
+                            "${resourcesLoc}geckodriver")
+                    break
+                case 'linux':
+                    project.logger.lifecycle("Firefox driver selected on Linux.")
+                    systemProperty 'webdriver.firefox.bin', System.getProperty('webdriver.firefox.bin',
+                            "${resourcesLoc}linux/geckodriver_linux")
+                    break
+                default:
+                    project.logger.lifecycle("OS value not found.  Selecting Firefox driver on Windows.")
+                    systemProperty 'webdriver.firefox.bin', System.getProperty('webdriver.firefox.bin',
+                            "${resourcesLoc}geckodriver.exe")
+            }
+            break
+        case 'iexplorer':
+            if(testOs != "windows") {
+                switch(testOs) {
+                    case 'mac':
+                        project.logger.lifecycle("Internet Explorer was chosen on Mac and this is not supprted.  " +
+                                "Starting chrome driver instead.")
+                        systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver',
+                                "${resourcesLoc}chromedriver")
+                        break
+                    case 'linux':
+                        project.logger.lifecycle("Internet Explorer was chosen on Linux and this is not supprted.  " +
+                                "Starting chrome driver instead.")
+                        systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver',
+                                "${resourcesLoc}linux/chromedriver")
+                        break
+                }
+                break
+            }
+            project.logger.lifecycle("Internet Explorer driver selected.  Only Windows is available.")
+            if(System.getProperty("os.arch").contains("x86")) {
+                systemProperty 'webdriver.ie.driver', System.getProperty('webdriver.ie.driver',
+                        "${resourcesLoc}IEDriverServer32.exe")
+            } else {
+                systemProperty 'webdriver.ie.driver', System.getProperty('webdriver.ie.driver',
+                        "${resourcesLoc}IEDriverServer.exe")
+            }
+
+            break
+        default:
+            switch(testOs) {
+                case 'windows':
+                    project.logger.lifecycle("Invalid driver entry.  Loading chrome driver selected on Windows.")
+                    systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver',
+                            "${resourcesLoc}chromedriver.exe")
+                    break
+                case 'mac':
+                    project.logger.lifecycle("Invalid driver entry.  Loading chrome driver selected on Mac.")
+                    systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver',
+                            "${resourcesLoc}chromedriver")
+                    break
+                case 'linux':
+                    project.logger.lifecycle("Invalid driver entry.  Loading chrome driver selected on Linux.")
+                    systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver',
+                            "${resourcesLoc}linux/chromedriver")
+                    break
+                default:
+                    project.logger.lifecycle("Invalid driver entry and OS value not found.  Attempting Chrome driver" +
+                            " on Windows.")
+                    systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver',
+                            "${resourcesLoc}chromedriver.exe")
+            }
+    }
+
+    test.finalizedBy(aggregate)
+}
+
+gradle.startParameter.continueOnFailure = true
