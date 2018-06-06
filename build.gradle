@@ -24,10 +24,13 @@ dependencies {
     testCompile "junit:junit:4.12"
     testCompile "net.serenity-bdd:serenity-core:1.9.19"
     testCompile "net.serenity-bdd:serenity-cucumber:1.9.7"
-    testCompile "net.serenity-bdd:serenity-rest-assured:1.9.17"
+    testCompile "net.serenity-bdd:serenity-rest-assured:1.9.19"
     testCompile "org.seleniumhq.selenium:selenium-ie-driver:3.11.0"
     testCompile "org.seleniumhq.selenium:selenium-chrome-driver:3.11.0"
     testCompile "org.seleniumhq.selenium:selenium-firefox-driver:3.11.0"
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '1.0.0'
+    compile "org.slf4j:slf4j-api:1.6.1"
+    compile "org.slf4j:slf4j-simple:1.6.1"
 }
 
 tasks.withType(Test) {
