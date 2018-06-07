@@ -3,6 +3,7 @@ Feature: Postman Collections API
   As a consumer of the Postman Collections RESTful API
   I would like to be able to create, read, delete and update my postman collections
 
+
   Scenario: GET All of the collections associated with a Postman user account
     Given I have a base service endpoint for the collections methods in the Postman API
     And I have a valid API Key for the Postman Service
@@ -14,17 +15,13 @@ Feature: Postman Collections API
   Scenario: GET a specific collection associated with a Postman user account and a unique id
     Given I have a base service endpoint for the collections methods in the Postman API
     And I have a valid API Key for the Postman Service
-    When I execute the POST collection method
-    Then the status code returned is '200'
-    And I capture the created collections ID
-    When I execute the GET collection by ID request
+    When I execute the GET collection by ID '35571d93-0074-8b3e-e969-bc2c416e4a16' method
     Then the status code returned is '200'
     And the response is returned with the collection data associated with the ID
 
 
   Scenario: POST a new collection to a POSTMan user account
     Given I have a base service endpoint for the collections methods in the Postman API
-    And I have a valid API Key for the Postman Service
     And I set the Content Type to "ContentType.JSON"
     When I execute the POST collection method
     Then the status code returned is '200'
@@ -33,23 +30,12 @@ Feature: Postman Collections API
 
   Scenario: DELETE a collection from a POSTMan user account
     Given I have a base service endpoint for the collections methods in the Postman API
-    And I have a valid API Key for the Postman Service
     And I set the Content Type to "ContentType.JSON"
-    When I execute the POST collection method
+    When I execute a DELETE collection method for the following collection id ""
     Then the status code returned is '200'
-    And I capture the created collections ID
-    When I execute a DELETE collection request
-    Then the status code returned is '200'
-    When I execute the GET collection by ID request
-    Then the status code returned is '404'
-
 
   Scenario: Update a collection in a POSTMan user account
     Given I have a base service endpoint for the collections methods in the Postman API
-    And I have a valid API Key for the Postman Service
     And I set the Content Type to "ContentType.JSON"
-    When I execute the POST collection method
-    Then the status code returned is '200'
-    And I capture the created collections ID
-    When I execute a PUT collection method request
+    When I execute a PUT collection method for the following collection id ""
     Then the status code returned is '200'

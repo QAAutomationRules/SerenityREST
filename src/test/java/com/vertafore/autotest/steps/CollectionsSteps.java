@@ -35,7 +35,7 @@ public class CollectionsSteps {
 
     @Then("^the status code returned is '(\\d+)'$")
     public void the_status_code_returned_is(int statusCode) throws Exception {
-        scenarioActions.Validate200Response(statusCode);
+        scenarioActions.ValidateStatusCode(statusCode);
     }
 
     @Then("^the response contains collections$")
@@ -43,14 +43,46 @@ public class CollectionsSteps {
         scenarioActions.ValidateCollections();
     }
 
-    @When("^I execute the GET collection by ID '(.*)' method$")
-    public void i_execute_the_GET_collection_by_ID_method(String id) throws Exception {
-        scenarioActions.GETCollectionByID(id);
+    @Given("^I set the Content Type to \"([^\"]*)\"$")
+    public void i_set_the_Content_Type_to(String contentType) throws Exception {
+        scenarioActions.setContentType(contentType);
     }
 
-    @Then("^the response is returned with the collection associated with the ID$")
-    public void the_response_is_returned_with_the_collection_associated_with_the_ID() throws Exception {
-        scenarioActions.ValidateCollectionID();
+
+    @When("^I execute the POST collection method$")
+    public void i_execute_the_POST_collection_method() throws Exception {
+        scenarioActions.POSTcollection();
     }
 
+    @Then("^the new collection is created in the POSTMAN System$")
+    public void the_new_collection_is_created_in_the_POSTMAN_System() throws Exception {
+        scenarioActions.ValidateCollectionCreated();
+    }
+
+    @Then("^the response is returned with the collection data associated with the ID$")
+    public void the_response_is_returned_with_the_collection_data_associated_with_the_ID() throws Exception {
+        scenarioActions.GetCollectionUID();
+    }
+
+
+    @Then("^I capture the created collections ID$")
+    public void i_capture_the_created_collections_ID() throws Exception {
+        scenarioActions.GetCollectionUID();
+    }
+
+
+    @When("^I execute a DELETE collection request$")
+    public void i_execute_a_DELETE_collection_request() throws Exception {
+        scenarioActions.DELETECollection();
+    }
+
+    @When("^I execute a PUT collection method request$")
+    public void i_execute_a_PUT_collection_method_request() throws Exception {
+        scenarioActions.PUTcollectionByID();
+    }
+
+    @When("^I execute the GET collection by ID request$")
+    public void iExecuteTheGETCollectionByIDRequest() throws Throwable {
+        scenarioActions.GETCollectionByID();
+    }
 }
