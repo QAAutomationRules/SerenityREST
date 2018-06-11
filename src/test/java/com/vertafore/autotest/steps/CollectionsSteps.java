@@ -48,12 +48,6 @@ public class CollectionsSteps {
         scenarioActions.setContentType(contentType);
     }
 
-
-    @When("^I execute the POST collection method$")
-    public void i_execute_the_POST_collection_method() throws Exception {
-        scenarioActions.POSTcollection();
-    }
-
     @Then("^the new collection is created in the POSTMAN System$")
     public void the_new_collection_is_created_in_the_POSTMAN_System() throws Exception {
         scenarioActions.ValidateCollectionCreated();
@@ -84,5 +78,15 @@ public class CollectionsSteps {
     @When("^I execute the GET collection by ID request$")
     public void iExecuteTheGETCollectionByIDRequest() throws Throwable {
         scenarioActions.GETCollectionByID();
+    }
+
+    @When("^I execute the POST collection request$")
+    public void iExecuteThePOSTCollectionRequest() throws Throwable {
+        scenarioActions.POSTcollection();
+    }
+
+    @When("^I execute the POST collection request using an Immutable object$")
+    public void i_execute_the_POST_collection_request_using_an_Immutable_object() throws Exception {
+        scenarioActions.POSTcollectionDTO();
     }
 }

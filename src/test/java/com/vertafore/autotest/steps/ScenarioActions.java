@@ -2,6 +2,8 @@ package com.vertafore.autotest.steps;
 
 import com.github.javafaker.Faker;
 import com.vertafore.autotest.Utilities;
+import com.vertafore.autotest.builders.CollectionsBuilder;
+import com.vertafore.autotest.data.model.RootCollectionResponseDTO;
 import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -15,15 +17,13 @@ import net.serenitybdd.core.Serenity;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.Step;
 import org.apache.http.client.methods.RequestBuilder;
+import org.assertj.core.api.BooleanAssert;
 import org.hamcrest.Matchers;
 
 import java.io.IOException;
-
-import static io.restassured.config.EncoderConfig.encoderConfig;
 import static net.serenitybdd.rest.SerenityRest.given;
-import static net.serenitybdd.rest.SerenityRest.when;
 import static net.serenitybdd.rest.SerenityRest.then;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ScenarioActions {
 
@@ -138,6 +138,22 @@ public class ScenarioActions {
 
 
     @Step
+    public void POSTcollectionDTO()
+    {
+        response = given()
+                .spec(requestSpec)
+                .contentType(ContentType.JSON)
+                .body(CollectionsBuilder.POSTCollectionsDTO())
+                .when()
+                .post(SerenityRest.getDefaultBasePath())
+                .then()
+                .extract().response();
+
+        response.prettyPrint();
+    }
+
+
+    @Step
     public void POSTcollection()
     {
         response = given()
@@ -200,11 +216,6 @@ public class ScenarioActions {
         then().extract().response().body().prettyPrint();
     }
 
-    @Step
-    public void ValidateCollectionID()
-    {
-        then().extract().response().body().prettyPrint();
-    }
 
 
     @Step
@@ -230,6 +241,18 @@ public class ScenarioActions {
                         + "/" + Serenity.getCurrentSession().get("CollectionUID"))
             .then()
                 .extract().response();
+    }
+
+    @Then("^the collection is created in POSTMan$")
+    public void the_collection_is_created_in_POSTMan() throws Exception {
+
+        String regex = "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}";
+
+        RootCollectionResponseDTO rdto = then().extract().response().body().as(RootCollectionResponseDTO.class);
+
+        assertThat(rdto.getCollection().id().matches(regex));
+        assertThat(!rdto.getCollection().getName().isEmpty());
+        assertThat(rdto.getCollection().uid().matches(regex));
     }
 
 
